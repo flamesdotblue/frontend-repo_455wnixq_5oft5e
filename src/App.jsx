@@ -14,7 +14,13 @@ const MOCK_RESTAURANTS = [
     cuisines: ["Biryani", "North Indian", "Mughlai"],
     image:
       "https://images.unsplash.com/photo-1604908554049-1d995b80a21b?q=80&w=1470&auto=format&fit=crop",
-    popularItem: { name: "Chicken Biryani", price: 220 },
+    menu: [
+      { id: "res1-1", name: "Chicken Biryani", price: 220, veg: false },
+      { id: "res1-2", name: "Mutton Biryani", price: 280, veg: false },
+      { id: "res1-3", name: "Veg Dum Biryani", price: 200, veg: true },
+      { id: "res1-4", name: "Paneer 65", price: 180, veg: true },
+      { id: "res1-5", name: "Raita", price: 40, veg: true },
+    ],
   },
   {
     id: "res2",
@@ -25,7 +31,13 @@ const MOCK_RESTAURANTS = [
     cuisines: ["Burgers", "Fast Food"],
     image:
       "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1470&auto=format&fit=crop",
-    popularItem: { name: "Cheese Burger", price: 180 },
+    menu: [
+      { id: "res2-1", name: "Classic Cheese Burger", price: 180, veg: false },
+      { id: "res2-2", name: "Crispy Veg Burger", price: 140, veg: true },
+      { id: "res2-3", name: "Peri Peri Fries", price: 120, veg: true },
+      { id: "res2-4", name: "Chicken Nuggets (6)", price: 160, veg: false },
+      { id: "res2-5", name: "Chocolate Shake", price: 150, veg: true },
+    ],
   },
   {
     id: "res3",
@@ -36,7 +48,13 @@ const MOCK_RESTAURANTS = [
     cuisines: ["Japanese", "Sushi"],
     image:
       "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1470&auto=format&fit=crop",
-    popularItem: { name: "Salmon Nigiri", price: 320 },
+    menu: [
+      { id: "res3-1", name: "Salmon Nigiri (6)", price: 320, veg: false },
+      { id: "res3-2", name: "Avocado Maki (8)", price: 260, veg: true },
+      { id: "res3-3", name: "Chicken Katsu Roll (8)", price: 340, veg: false },
+      { id: "res3-4", name: "Edamame", price: 180, veg: true },
+      { id: "res3-5", name: "Miso Soup", price: 120, veg: true },
+    ],
   },
   {
     id: "res4",
@@ -47,7 +65,13 @@ const MOCK_RESTAURANTS = [
     cuisines: ["Italian", "Pizza"],
     image:
       "https://images.unsplash.com/photo-1548365328-8b6dbfaa1b9a?q=80&w=1470&auto=format&fit=crop",
-    popularItem: { name: "Margherita", price: 260 },
+    menu: [
+      { id: "res4-1", name: "Margherita", price: 260, veg: true },
+      { id: "res4-2", name: "Pepperoni", price: 320, veg: false },
+      { id: "res4-3", name: "Four Cheese", price: 340, veg: true },
+      { id: "res4-4", name: "Garlic Bread", price: 140, veg: true },
+      { id: "res4-5", name: "Tiramisu", price: 180, veg: true },
+    ],
   },
 ];
 
@@ -62,13 +86,13 @@ export default function App() {
     return MOCK_RESTAURANTS.filter((r) =>
       r.name.toLowerCase().includes(q) ||
       r.cuisines.join(", ").toLowerCase().includes(q) ||
-      r.popularItem.name.toLowerCase().includes(q)
+      r.menu.some((m) => m.name.toLowerCase().includes(q))
     );
   }, [query]);
 
-  const addToCart = (restaurant) => {
+  const addToCart = (item, restaurant) => {
     setCart((prev) => {
-      const id = `${restaurant.id}-${restaurant.popularItem.name}`;
+      const id = `${restaurant.id}-${item.id}`;
       const existing = prev.find((i) => i.id === id);
       if (existing) {
         return prev.map((i) => (i.id === id ? { ...i, qty: i.qty + 1 } : i));
@@ -77,8 +101,8 @@ export default function App() {
         ...prev,
         {
           id,
-          name: `${restaurant.popularItem.name} • ${restaurant.name}`,
-          price: restaurant.popularItem.price,
+          name: `${item.name} • ${restaurant.name}`,
+          price: item.price,
           image: restaurant.image,
           qty: 1,
         },
@@ -115,7 +139,7 @@ export default function App() {
           <p className="text-sm text-gray-600">{filtered.length} restaurants</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {filtered.map((r) => (
             <RestaurantCard key={r.id} data={r} onAdd={addToCart} />
           ))}
